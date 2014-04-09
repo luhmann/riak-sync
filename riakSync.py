@@ -1,10 +1,21 @@
+import argparse
 import redis
 import os
 import requests
 import json
 from riak import RiakClient, RiakNode
 
-redisHost = 'frontend.dev-fe-01.vag-jfd.magic-technik.de'
+parser = argparse.ArgumentParser(description='Takes key of urls parses their redis-keys for image keys and syncs those between to riaks')
+parser.add_argument('--redis', dest='redisHost', default='frontend.dev-fe-01.vag-jfd.magic-technik.de', help='The host we get the redis data from')
+parser.add_argument('--srcRiak', dest='srcRiakHost', default='10.228.39.181', help='The source riak we pull the data from')
+parser.add_argument('--destRiak', dest='destRiakHost', default='int-riak-01.magic-technik.de', help='The destination riak we push the data into')
+args = parser.parse_args()
+
+# map arguments
+redisHost = args.redisHost
+srcRiakHost = args.srcRiakHost
+destRiakHost = args.destRiakHost
+
 redisHandle = redis.StrictRedis(host=redisHost, port=6379, db=0)
 redisKeyPrefix = 'content:v1:de:de:live:'
 baseDir = os.path.dirname(os.path.realpath(__file__))
@@ -55,11 +66,11 @@ imgUrls = getImgUrls(pages)
 print 'Found ' + str(len(imgUrls)) + ' referenced images \n'
 
 # connect to live riak
-rcLive = RiakClient(protocol='http', host='10.228.39.181', http_port=8098)
+rcLive = RiakClient(protocol='http', host=srcRiakHost, http_port=8098)
 rbLive = rcLive.bucket('ez')
 
 # connect to integration riak
-rcInt = RiakClient(protocol='http', host='int-riak-01.magic-technik.de', http_port=8098)
+rcInt = RiakClient(protocol='http', host=destRiakHost, http_port=8098)
 rbInt = rcInt.bucket('ez')
 
 # save image in integration riak
