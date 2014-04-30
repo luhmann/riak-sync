@@ -6,7 +6,7 @@ import json
 from riak import RiakClient, RiakNode
 
 parser = argparse.ArgumentParser(description='Takes key of urls parses their redis-keys for image keys and syncs those between to riaks')
-parser.add_argument('--redis', dest='redisHost', default='frontend.dev-fe-01.vag-jfd.magic-technik.de', help='The host we get the redis data from')
+parser.add_argument('--redis', dest='redisHost', default='frontend.vag-devfe-01.vag-jfd.magic-technik.de', help='The host we get the redis data from')
 parser.add_argument('--srcRiak', dest='srcRiakHost', default='10.228.39.181', help='The source riak we pull the data from')
 parser.add_argument('--destRiak', dest='destRiakHost', default='int-riak-01.magic-technik.de', help='The destination riak we push the data into')
 args = parser.parse_args()
@@ -75,23 +75,15 @@ rbInt = rcInt.bucket('ez')
 
 # save image in integration riak
 def saveToIntRiak(key, riakObj):
-    img = rbInt.new(key, encoded_data=riakObj.encoded_data, content_type=riakObj.content_type)
-    img.store()
+    if riakObj.content_type is not None:
+        img = rbInt.new(key, encoded_data=riakObj.encoded_data, content_type=riakObj.content_type)
+        img.store()
 
 # get and save all images
 for img in imgUrls:
     print img
-    buffer = rbLive.get(img)
-    saveToIntRiak(img, buffer)
-
-
-
-
-
-
-
-
-
-
-
-#print redisHandle.get(redisKeyPrefix + '/');
+    local = rbInt.get(img)
+    print local.exists
+    if local.exists is False:
+        buffer = rbLive.get(img)
+        saveToIntRiak(img, buffer)
