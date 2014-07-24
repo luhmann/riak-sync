@@ -31,7 +31,9 @@ def find_values(id, json_repr):
     results = []
 
     def _decode_dict(a_dict):
-        try: results.append(a_dict[id][3:])
+        try:
+            if isinstance(a_dict[id], basestring):
+                results.append(a_dict[id][3:])
         except KeyError: pass
         return a_dict
 
