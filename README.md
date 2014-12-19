@@ -17,7 +17,7 @@ If it finds a match it encodes the local image-file and pushes it into the targe
 
 Install system dependencies:
 
-`brew install python libmagic libtiff libjpeg webp little-cms2
+`brew install python libmagic libtiff libjpeg webp little-cms2`
 
 Install python packages:
 
