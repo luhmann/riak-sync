@@ -1,0 +1,5 @@
+riak==2.1.0
+pillow==2.4.0
+python-magic==0.4.6
+scandir
+redis
