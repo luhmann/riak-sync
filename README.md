@@ -17,7 +17,7 @@ If it finds a match it encodes the local image-file and pushes it into the targe
 
 Install system dependencies:
 
-`brew install python libmagic libtiff libjpeg webp little-cms2`
+`brew install python libmagic libtiff libjpeg webp little-cms2
 
 Install python packages:
 
@@ -30,7 +30,7 @@ Sync the complete live redis to your local host or devbox. You can use the redis
 
 - `git clone git@github.com:luhmann/redis-sync.git`
 
-- In the cloned folder: `python redisSync.py --redisSrc="<the redis master>" --redisDest="<your dev-box"`
+- In the cloned folder: `python redisSync.py --redisSrc="<the redis master>" --redisDest="<your dev-box">`
 
 ### Get the ezpublish-assets
 - Create a folder 'ez-data' one level up from where this repo lies on your local disk
