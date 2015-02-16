@@ -3,9 +3,9 @@ import json
 import os
 import pickle
 
-redisHandle = redis.StrictRedis(host='frontend.vag-jfd.magic-technik.de', port=6379, db=0)
+redisHandle = redis.StrictRedis(host='lnxv-feweb-04.lve-1.magic-technik.de', port=6379, db=0)
 redisKeyPrefix = 'content:v1:de:de:live:'
-imageKeys = ['src', 'image', 'thumbnail', 'cover']
+imageKeys = ['src', 'image', 'thumbnail', 'cover', 'backgroundImage', 'backgroundImageSubmit', 'backgroundImageAttendanceLimit']
 
 redisKeyPrefixBuzz = 'buzz:v1:de:de:live:'
 
@@ -47,9 +47,11 @@ keys = redisHandle.keys('*')
 for key in keys:
     print key
 
-    if not str(key).startswith(redisKeyPrefix):
+    if not (str(key).startswith(redisKeyPrefix) or str(key).startswith(redisKeyPrefixBuzz)):
         continue
 
     allLiveImgUrls = allLiveImgUrls + getImgUrls(key)
+
+print "Identified %d Image-Urls" % len(allLiveImgUrls)
 
 pickle.dump(allLiveImgUrls, open(os.path.join(baseDir, 'images.txt'), 'wb'))

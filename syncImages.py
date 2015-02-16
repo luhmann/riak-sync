@@ -13,14 +13,16 @@ import logging
 import sys
 from PIL import Image
 from riak import RiakClient
+from time import strftime
 
 
 baseDir = os.path.dirname(os.path.realpath(__file__))
 srcFile = os.path.join(baseDir, 'images.txt')
 assetDir = os.path.realpath(os.path.join(baseDir, '..', 'ez-data', 'assets'))
+uploadFileDir = os.path.join(baseDir, 'filesToUpload')
 serverMediaDirPrefix = 'var/ezflow_site/storage/images'
-riakClientLive = RiakClient(protocol='http', host='10.228.39.113', http_port=8098)
-riakClientDevBox = RiakClient(protocol='http', host='frontend.beta.magic-technik.de', http_port=8098)
+riakClientLive = RiakClient(protocol='http', host='vm-riak-03.lve-1.magic-technik.de', http_port=8098)
+riakClientDevBox = RiakClient(protocol='pbc', host='frontend.beta.magic-technik.de', http_port=8087)
 
 riakClient = riakClientLive
 riakBucket = riakClient.bucket('ez')
@@ -136,8 +138,13 @@ def save_to_riak(key, json):
     img = riakBucket.new(key, encoded_data=json)
     img.store()
 
+def save_to_disk(key, data):
+    with open(os.path.join(uploadFileDir, key), 'w') as outfile:
+        json.dump(data, outfile)
+
 
 def main():
+    logger.info('Started run at %s' % strftime("%Y-%m-%d %H:%M:%S"))
     logger.debug('Asset-Dir: %s' % assetDir)
 
     imageList = pickle.load(open(srcFile, 'rb'))
@@ -184,10 +191,12 @@ def main():
         imgJson = create_img_json(file)
 
         # print imgJson
-
+        # save_to_disk(img, imgJson)
         save_to_riak(img, imgJson)
 
         logger.debug('PHP Adler Hash %s' % details['adler'])
         logger.debug('Python Adler Hash %s' % calcAdler)
+
+    logger.info('Run completed at %s' % strftime("%Y-%m-%d %H:%M:%S"))
 
 main()
